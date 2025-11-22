@@ -43,7 +43,7 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
                 <AlertCircle size={40} className="text-sky-600" />
             </div>
             <h2 className="text-3xl font-bold text-slate-900 mb-2">One Final Step</h2>
-            <p className="text-slate-700 text-base font-semibold max-w-xs mx-auto">
+            <p className="text-slate-900 text-base font-semibold max-w-xs mx-auto">
                 To process your request for <span className="font-bold text-slate-900">₹{parseInt(amount).toLocaleString()}</span>, please review the timeline below.
             </p>
         </div>
@@ -115,7 +115,7 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
                 <UserCheck size={40} className="text-emerald-600" />
             </div>
             <h2 className="text-3xl font-bold text-slate-900 mb-2">Commitment Noted</h2>
-            <p className="text-slate-700 text-base font-semibold mb-8 max-w-xs mx-auto">
+            <p className="text-slate-900 text-base font-semibold mb-8 max-w-xs mx-auto">
                 Thank you. We have recorded your promise to pay <span className="font-bold text-slate-900">₹{data.ptpAmount}</span> on <span className="font-bold text-slate-900">{new Date(data.ptpDate).toLocaleDateString()}</span>.
             </p>
 
@@ -125,17 +125,17 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
                 </h4>
                 <div className="space-y-4">
                     <div className="flex gap-3 items-start">
-                        <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-xs font-bold text-slate-600 mt-0.5">1</div>
+                        <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-xs font-bold text-slate-800 mt-0.5">1</div>
                         <div>
                             <p className="text-base font-bold text-slate-800">Save our Number</p>
-                            <p className="text-sm text-slate-600 mt-1 font-semibold">Save <span className="font-mono bg-slate-100 px-1 rounded text-slate-800">+91-9008457659</span> to ensure you don't miss the payment link.</p>
+                            <p className="text-sm text-slate-800 mt-1 font-semibold">Save <span className="font-mono bg-slate-100 px-1 rounded text-slate-800">+91-9008457659</span> to ensure you don't miss the payment link.</p>
                         </div>
                     </div>
                     <div className="flex gap-3 items-start">
-                        <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-sm font-bold text-slate-700 mt-0.5">2</div>
+                        <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-sm font-bold text-slate-800 mt-0.5">2</div>
                          <div>
                             <p className="text-base font-bold text-slate-800">Establish Connection</p>
-                            <p className="text-sm text-slate-600 mt-1 font-semibold">Click below to say "Hi" on WhatsApp so we can send the link on due date.</p>
+                            <p className="text-sm text-slate-800 mt-1 font-semibold">Click below to say "Hi" on WhatsApp so we can send the link on due date.</p>
                         </div>
                     </div>
                 </div>
@@ -234,7 +234,7 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
       </div>
 
       <h2 className="text-3xl font-bold text-slate-900 mb-2 drop-shadow-sm">Request Sent!</h2>
-      <p className="text-slate-700 mb-8 font-semibold text-base max-w-xs mx-auto leading-relaxed">
+      <p className="text-slate-900 mb-8 font-semibold text-base max-w-xs mx-auto leading-relaxed">
         You can close this window now. We've got it from here.
       </p>
 
@@ -247,12 +247,12 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
                         <Sun size={16} />
                     </div>
                     <div>
-                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Status</div>
+                        <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">Status</div>
                         <div className="font-bold text-slate-900 leading-none text-base">{content.status}</div>
                     </div>
                 </div>
                 <div className="text-right">
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Date</div>
+                    <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">Date</div>
                     <div className="font-bold text-slate-900 leading-none text-base">{new Date().toLocaleDateString()}</div>
                 </div>
             </div>
@@ -264,7 +264,7 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
             
             <div className="mb-4">
                 <p className="text-base font-bold text-slate-900 mb-1">{content.title}</p>
-                <p className="text-sm text-slate-700 font-semibold leading-relaxed">
+                <p className="text-sm text-slate-800 font-semibold leading-relaxed">
                     {content.desc}
                 </p>
             </div>
@@ -273,14 +273,14 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
                 {content.points.map((p, i) => (
                     <div key={i} className="flex items-center gap-2.5">
                         <p.icon size={14} className="text-sky-500 shrink-0" />
-                        <span className="text-sm font-bold text-slate-700">{p.text}</span>
+                        <span className="text-sm font-bold text-slate-800">{p.text}</span>
                     </div>
                 ))}
             </div>
         </div>
       </div>
 
-      <Button variant="ghost" onClick={onReset} className="text-slate-500 hover:text-sky-600">
+      <Button variant="ghost" onClick={onReset} className="text-slate-700 hover:text-sky-600">
         <RefreshCcw size={16} /> Start a new request
       </Button>
     </div>
