@@ -16,13 +16,16 @@ function App() {
 
   // Extract borrower information from URL on mount
   useEffect(() => {
-    const borrowerData = extractBorrowerFromURL();
-    if (borrowerData) {
-      setBorrower(borrowerData);
-      console.log('[App] Borrower data loaded from URL:', borrowerData);
-    } else {
-      console.log('[App] No borrower data found in URL');
-    }
+    const loadBorrowerData = async () => {
+      const borrowerData = await extractBorrowerFromURL();
+      if (borrowerData) {
+        setBorrower(borrowerData);
+        console.log('[App] Borrower data loaded from URL:', borrowerData);
+      } else {
+        console.log('[App] No borrower data found in URL');
+      }
+    };
+    loadBorrowerData();
   }, []);
 
   // detailed logging
@@ -99,7 +102,7 @@ function App() {
             )}
             
             {step === 3 && intent && (
-              <Summary intent={intent} data={formData} onReset={handleReset} />
+              <Summary intent={intent} data={formData} onReset={handleReset} borrower={borrower || undefined} />
             )}
         </main>
 

@@ -23,10 +23,24 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
   const [data, setData] = useState<FormData>(initialData);
   const [internalStep, setInternalStep] = useState(1);
   
-  // Mock values or Prop values
+  // Use borrower data from token or defaults
   const TOTAL_DUE = borrower?.amount ? parseInt(borrower.amount) : 14500;
-  const MIN_SETTLEMENT = borrower?.min_settlement ? parseInt(borrower.min_settlement) : 8500;
+  // Maximum is the pending_amount (closure amount)
   const MAX_SETTLEMENT = borrower?.max_settlement ? parseInt(borrower.max_settlement) : TOTAL_DUE;
+  // Minimum is the settlement_amount from token
+  const MIN_SETTLEMENT = borrower?.min_settlement ? parseInt(borrower.min_settlement) : Math.floor(MAX_SETTLEMENT * 0.6);
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('[DetailsForm] Borrower data received:', borrower);
+    console.log('[DetailsForm] Calculated values:', {
+      TOTAL_DUE,
+      MAX_SETTLEMENT,
+      MIN_SETTLEMENT,
+      borrower_amount: borrower?.amount,
+      borrower_max_settlement: borrower?.max_settlement
+    });
+  }, [borrower, TOTAL_DUE, MAX_SETTLEMENT, MIN_SETTLEMENT]);
   
   const [sliderValue, setSliderValue] = useState<number>(MAX_SETTLEMENT);
 
@@ -34,12 +48,23 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
   useEffect(() => {
     if (intent === Intent.REQUEST_SETTLEMENT) {
         if (data.settlementAmount) {
-            setSliderValue(parseInt(data.settlementAmount));
+            const savedValue = parseInt(data.settlementAmount);
+            setSliderValue(savedValue);
         } else {
             setSliderValue(MAX_SETTLEMENT);
         }
     }
-  }, [intent, MAX_SETTLEMENT]);
+  }, [intent, MAX_SETTLEMENT, data.settlementAmount, borrower]);
+  
+  // Force re-render when slider value changes to ensure closure check updates
+  useEffect(() => {
+    if (intent === Intent.REQUEST_SETTLEMENT) {
+      const currentValue = Math.round(Number(sliderValue));
+      const maxValue = Math.round(Number(MAX_SETTLEMENT));
+      const isClosure = currentValue === maxValue;
+      // This effect ensures React knows to re-render when sliderValue changes
+    }
+  }, [sliderValue, MAX_SETTLEMENT, intent]);
 
   const update = (key: keyof FormData, value: any) => {
     setData(prev => ({ ...prev, [key]: value }));
@@ -63,6 +88,17 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
           <div className="animate-fade-in-right">
             <h3 className="text-2xl font-bold text-slate-900 mb-2">Let's clear this up.</h3>
             <p className="text-slate-700 mb-6 text-base font-semibold">Choose an amount to pay today.</p>
+            
+            {/* Show total outstanding if from token */}
+            {borrower?.amount && (
+              <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-6">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-semibold text-slate-600">Total Outstanding</span>
+                  <span className="text-2xl font-bold text-slate-900">₹{TOTAL_DUE.toLocaleString()}</span>
+                </div>
+              </div>
+            )}
+            
             <div className="space-y-3">
               <BigOptionButton 
                 title="Full Outstanding" 
@@ -129,8 +165,13 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
 
     // --- SETTLEMENT (GAMIFIED SLIDER) ---
     if (intent === Intent.REQUEST_SETTLEMENT) {
-      const isFullClosure = sliderValue >= MAX_SETTLEMENT;
-      const savings = MAX_SETTLEMENT - sliderValue;
+      // Closure only happens at exact pending amount (MAX_SETTLEMENT)
+      // Convert both to integers for exact comparison
+      const currentValue = Math.round(Number(sliderValue));
+      const maxValue = Math.round(Number(MAX_SETTLEMENT));
+      // Use exact equality - closure only at max value
+      const isFullClosure = currentValue === maxValue;
+      const savings = maxValue - currentValue;
       
       const themeBg = isFullClosure ? 'bg-emerald-50' : 'bg-amber-50';
       const themeBorder = isFullClosure ? 'border-emerald-100' : 'border-amber-100';
@@ -139,26 +180,58 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
 
       return (
         <div className="animate-fade-in-right pb-4">
-           <h3 className="text-2xl font-bold text-slate-900 mb-2">Negotiate Closure</h3>
-           <p className="text-slate-700 mb-8 text-base font-semibold">Slide to adjust your offer.</p>
+           <h3 className="text-2xl font-bold text-slate-900 mb-2">
+             {isFullClosure ? 'Negotiate Closure' : 'Negotiate Settlement'}
+           </h3>
+           <p className="text-slate-700 mb-6 text-base font-semibold">Slide to adjust your offer.</p>
+
+           {/* Total Outstanding Display */}
+           <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-6">
+             <div className="flex justify-between items-center">
+               <span className="text-sm font-semibold text-slate-600">Total Outstanding</span>
+               <span className="text-2xl font-bold text-slate-900">₹{TOTAL_DUE.toLocaleString()}</span>
+             </div>
+           </div>
 
            {/* The Slider Section */}
            <div className="mb-8 relative px-2">
-             <div className="flex justify-between text-sm font-bold text-slate-600 mb-2 uppercase tracking-wider">
-                <span>Min: ₹{MIN_SETTLEMENT.toLocaleString()}</span>
-                <span>Max: ₹{MAX_SETTLEMENT.toLocaleString()}</span>
+             <div className="flex justify-between items-center mb-2">
+               <div className="flex gap-2 text-sm font-bold text-slate-600 uppercase tracking-wider">
+                 <span>Min: ₹{MIN_SETTLEMENT.toLocaleString()}</span>
+                 <span className="mx-2">|</span>
+                 <span>Max: ₹{MAX_SETTLEMENT.toLocaleString()}</span>
+               </div>
+               {!isFullClosure && (
+                 <button
+                   onClick={() => {
+                     setSliderValue(MAX_SETTLEMENT);
+                     update('settlementAmount', MAX_SETTLEMENT.toString());
+                   }}
+                   className="text-xs font-bold text-emerald-600 hover:text-emerald-700 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all"
+                 >
+                   Set to Closure
+                 </button>
+               )}
              </div>
              
              <input 
                type="range" 
                min={MIN_SETTLEMENT} 
                max={MAX_SETTLEMENT} 
-               step={100}
+               step={Math.min(100, Math.floor((MAX_SETTLEMENT - MIN_SETTLEMENT) / 100) || 1)}
                value={sliderValue}
                onChange={(e) => {
                    const val = parseInt(e.target.value);
                    setSliderValue(val);
                    update('settlementAmount', val.toString());
+               }}
+               onMouseUp={(e) => {
+                   // Ensure slider snaps to max if very close
+                   const val = parseInt((e.target as HTMLInputElement).value);
+                   if (Math.abs(val - MAX_SETTLEMENT) < 50) {
+                       setSliderValue(MAX_SETTLEMENT);
+                       update('settlementAmount', MAX_SETTLEMENT.toString());
+                   }
                }}
                className={`w-full h-4 rounded-full appearance-none cursor-pointer shadow-inner transition-all duration-300 ${isFullClosure ? 'bg-emerald-100' : 'bg-amber-100'}`}
                style={{
@@ -170,7 +243,9 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                 <div className={`text-4xl font-extrabold transition-colors duration-300 ${isFullClosure ? 'text-emerald-700' : 'text-amber-700'}`}>
                     ₹ {sliderValue.toLocaleString()}
                 </div>
-                <div className="text-sm text-slate-600 font-semibold mt-2">Proposed Closure Amount</div>
+                <div className="text-sm text-slate-600 font-semibold mt-2">
+                  {isFullClosure ? 'Proposed Closure Amount' : 'Proposed Settlement Amount'}
+                </div>
              </div>
            </div>
 
@@ -181,27 +256,17 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                       {isFullClosure ? <TrendingUp size={20} /> : <Wallet size={20} />}
                   </div>
                   <div>
-                      <h4 className={`font-bold text-base mb-2 transition-colors duration-500 ${themeText}`}>
-                          {isFullClosure ? 'Excellent Decision!' : 'You Save Money'}
-                      </h4>
+                      {isFullClosure && (
+                        <h4 className={`font-bold text-base mb-2 transition-colors duration-500 ${themeText}`}>
+                            Excellent Decision!
+                        </h4>
+                      )}
                       <p className="text-sm text-slate-700 leading-relaxed font-medium">
                           {isFullClosure 
-                            ? "Paying the full amount protects your CIBIL score and ensures you can get loans in the future."
-                            : `You are saving ₹${savings.toLocaleString()} on this loan. However, "Settled" status may lower your credit score.`
+                            ? `Paying ₹${MAX_SETTLEMENT.toLocaleString()} (full outstanding of ₹${TOTAL_DUE.toLocaleString()}) protects your CIBIL score and increases probability of getting loan in future.`
+                            : `You are saving ₹${savings.toLocaleString()} on this loan (outstanding: ₹${TOTAL_DUE.toLocaleString()}). However, "Settled" status may lower your credit score.`
                           }
                       </p>
-                  </div>
-              </div>
-              
-              {/* Gamification Badge */}
-              <div className="mt-4 flex items-center justify-between border-t border-black/5 pt-3">
-                  <div className="text-sm font-bold text-slate-600 uppercase tracking-wider">Your Win</div>
-                  <div className={`text-base font-bold flex items-center gap-1.5 ${isFullClosure ? 'text-emerald-700' : 'text-amber-700'}`}>
-                      {isFullClosure ? (
-                          <><ShieldCheck size={18} /> CIBIL Protected</>
-                      ) : (
-                          <><Trophy size={18} /> Saved ₹{savings.toLocaleString()}</>
-                      )}
                   </div>
               </div>
            </div>
@@ -209,15 +274,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
            <div className="mt-6 space-y-3">
               <Button 
                 onClick={() => {
-                    // Calculate dynamic redirect based on slider
-                    const isClosure = sliderValue >= MAX_SETTLEMENT;
-                    const type = isClosure ? "closure" : "settlement";
-                    const msg = `I want to close my loan. My ${type} amount is ₹${sliderValue}. Please send the link.`;
-                    const url = `https://wa.me/919008457659?text=${encodeURIComponent(msg)}`;
-                    
-                    window.open(url, '_blank');
-                    
-                    // Submit to move to summary
+                    // Submit to move to summary page
                     onSubmit({...data, settlementAmount: sliderValue.toString()});
                 }}
                 className={isFullClosure ? "from-emerald-500 to-green-600 shadow-emerald-200" : "from-amber-500 to-orange-600 shadow-amber-200"}

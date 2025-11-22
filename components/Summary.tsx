@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Intent, FormData } from '../types';
+import { Intent, FormData, BorrowerProfile } from '../types';
 import { Button } from './ui/Base';
 import { Check, ShieldCheck, Calendar, RefreshCcw, Sun, Clock, Mail, MessageCircle, AlertCircle, ArrowRight, Phone, UserCheck } from 'lucide-react';
 
@@ -8,15 +8,17 @@ interface Props {
   intent: Intent;
   data: FormData;
   onReset: () => void;
+  borrower?: BorrowerProfile;
 }
 
-export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
+export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) => {
   
   // Special handling for Settlement/Payment flow to show instructions BEFORE WhatsApp
   if (intent === Intent.REQUEST_SETTLEMENT || intent === Intent.MAKE_PAYMENT) {
     
     // Determine the correct amount based on flow
-    let amount = "14500"; // Default to Full Outstanding
+    const MAX_SETTLEMENT = borrower?.max_settlement ? parseInt(borrower.max_settlement) : 14500;
+    let amount = MAX_SETTLEMENT.toString(); // Default to Full Outstanding
     
     if (data.settlementAmount) {
         amount = data.settlementAmount;
@@ -26,8 +28,8 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
         amount = data.payCustomAmount;
     }
 
-    // Determine type based on amount (Threshold: 14500)
-    const isClosure = parseInt(amount) >= 14500;
+    // Closure only happens at exact pending amount (MAX_SETTLEMENT)
+    const isClosure = parseInt(amount) === MAX_SETTLEMENT;
     const type = isClosure ? "closure" : "settlement";
     
     // Construct dynamic message
