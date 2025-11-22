@@ -54,8 +54,8 @@ export const BigOptionButton: React.FC<{
       </div>
     )}
     <div className="relative z-10">
-      <div className={`text-[15px] font-bold ${selected ? 'text-sky-900' : 'text-slate-700'}`}>{title}</div>
-      {subtitle && <div className="text-xs text-slate-400 mt-0.5 font-medium">{subtitle}</div>}
+      <div className={`text-base font-bold ${selected ? 'text-sky-900' : 'text-slate-800'}`}>{title}</div>
+      {subtitle && <div className="text-sm text-slate-600 mt-1 font-semibold">{subtitle}</div>}
     </div>
     
     {selected && (
@@ -85,37 +85,37 @@ export const ExternalLinkButton: React.FC<{
         <Icon size={22} />
       </div>
       <div className="flex-1">
-        <div className="text-[15px] font-bold text-slate-800 flex items-center gap-2">
+        <div className="text-base font-bold text-slate-900 flex items-center gap-2">
             {title}
-            <ExternalLink size={12} className="text-slate-300" />
+            <ExternalLink size={14} className="text-slate-400" />
         </div>
-        {subtitle && <div className="text-xs text-slate-400 mt-0.5 font-medium">{subtitle}</div>}
+        {subtitle && <div className="text-sm text-slate-600 mt-1 font-semibold">{subtitle}</div>}
       </div>
     </a>
   );
 
 export const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label?: string; hint?: string }> = ({ label, hint, className = '', ...props }) => (
   <div className="mb-5 w-full">
-    {label && <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">{label}</label>}
+    {label && <label className="block text-base font-bold text-slate-800 mb-2 ml-1">{label}</label>}
     <input 
-      className={`w-full rounded-2xl border-2 border-slate-100 px-4 py-3.5 text-base outline-none transition-all focus:border-sky-400 bg-slate-50 focus:bg-white focus:shadow-lg focus:shadow-sky-100 placeholder:text-slate-300 ${className}`}
+      className={`w-full rounded-2xl border-2 border-slate-100 px-4 py-3.5 text-base text-slate-900 font-medium outline-none transition-all focus:border-sky-400 bg-slate-50 focus:bg-white focus:shadow-lg focus:shadow-sky-100 placeholder:text-slate-400 ${className}`}
       {...props}
     />
-    {hint && <p className="text-xs text-slate-400 mt-1.5 ml-1">{hint}</p>}
+    {hint && <p className="text-sm text-slate-600 mt-1.5 ml-1 font-medium">{hint}</p>}
   </div>
 );
 
 export const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string }> = ({ label, className = '', children, ...props }) => (
   <div className="mb-5 w-full">
-    {label && <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">{label}</label>}
+    {label && <label className="block text-base font-bold text-slate-800 mb-2 ml-1">{label}</label>}
     <div className="relative">
       <select 
-        className={`w-full appearance-none rounded-2xl border-2 border-slate-100 px-4 py-3.5 text-base outline-none transition-all focus:border-sky-400 bg-slate-50 focus:bg-white focus:shadow-lg focus:shadow-sky-100 ${className}`}
+        className={`w-full appearance-none rounded-2xl border-2 border-slate-100 px-4 py-3.5 text-base text-slate-900 font-medium outline-none transition-all focus:border-sky-400 bg-slate-50 focus:bg-white focus:shadow-lg focus:shadow-sky-100 ${className}`}
         {...props}
       >
         {children}
       </select>
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
         <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -126,9 +126,9 @@ export const Select: React.FC<React.SelectHTMLAttributes<HTMLSelectElement> & { 
 
 export const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string }> = ({ label, className = '', ...props }) => (
   <div className="mb-5 w-full">
-    {label && <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">{label}</label>}
+    {label && <label className="block text-base font-bold text-slate-800 mb-2 ml-1">{label}</label>}
     <textarea 
-      className={`w-full rounded-2xl border-2 border-slate-100 px-4 py-3.5 text-base outline-none transition-all focus:border-sky-400 bg-slate-50 focus:bg-white focus:shadow-lg focus:shadow-sky-100 min-h-[120px] resize-none ${className}`}
+      className={`w-full rounded-2xl border-2 border-slate-100 px-4 py-3.5 text-base text-slate-900 font-medium outline-none transition-all focus:border-sky-400 bg-slate-50 focus:bg-white focus:shadow-lg focus:shadow-sky-100 min-h-[120px] resize-none ${className}`}
       {...props}
     />
   </div>

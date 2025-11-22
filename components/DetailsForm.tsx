@@ -26,19 +26,20 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
   // Mock values or Prop values
   const TOTAL_DUE = borrower?.amount ? parseInt(borrower.amount) : 14500;
   const MIN_SETTLEMENT = borrower?.min_settlement ? parseInt(borrower.min_settlement) : 8500;
+  const MAX_SETTLEMENT = borrower?.max_settlement ? parseInt(borrower.max_settlement) : TOTAL_DUE;
   
-  const [sliderValue, setSliderValue] = useState<number>(TOTAL_DUE);
+  const [sliderValue, setSliderValue] = useState<number>(MAX_SETTLEMENT);
 
-  // Initialize slider value if data exists, otherwise default to full closure
+  // Initialize slider value if data exists, otherwise default to max settlement
   useEffect(() => {
     if (intent === Intent.REQUEST_SETTLEMENT) {
         if (data.settlementAmount) {
             setSliderValue(parseInt(data.settlementAmount));
         } else {
-            setSliderValue(TOTAL_DUE);
+            setSliderValue(MAX_SETTLEMENT);
         }
     }
-  }, [intent, TOTAL_DUE]);
+  }, [intent, MAX_SETTLEMENT]);
 
   const update = (key: keyof FormData, value: any) => {
     setData(prev => ({ ...prev, [key]: value }));
@@ -60,8 +61,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
       if (internalStep === 1) {
         return (
           <div className="animate-fade-in-right">
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Let's clear this up.</h3>
-            <p className="text-slate-500 mb-6 text-sm">Choose an amount to pay today.</p>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Let's clear this up.</h3>
+            <p className="text-slate-700 mb-6 text-base font-semibold">Choose an amount to pay today.</p>
             <div className="space-y-3">
               <BigOptionButton 
                 title="Full Outstanding" 
@@ -101,7 +102,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                 />
                </div>
             )}
-            <h3 className="text-xl font-bold text-slate-800 mb-6">Preferred Mode</h3>
+            <h3 className="text-2xl font-bold text-slate-900 mb-6">Preferred Mode</h3>
             <div className="space-y-3">
                <BigOptionButton 
                 icon={Smartphone}
@@ -128,8 +129,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
 
     // --- SETTLEMENT (GAMIFIED SLIDER) ---
     if (intent === Intent.REQUEST_SETTLEMENT) {
-      const isFullClosure = sliderValue >= TOTAL_DUE;
-      const savings = TOTAL_DUE - sliderValue;
+      const isFullClosure = sliderValue >= MAX_SETTLEMENT;
+      const savings = MAX_SETTLEMENT - sliderValue;
       
       const themeBg = isFullClosure ? 'bg-emerald-50' : 'bg-amber-50';
       const themeBorder = isFullClosure ? 'border-emerald-100' : 'border-amber-100';
@@ -138,20 +139,20 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
 
       return (
         <div className="animate-fade-in-right pb-4">
-           <h3 className="text-xl font-bold text-slate-800 mb-1">Negotiate Closure</h3>
-           <p className="text-slate-500 mb-8 text-sm font-medium">Slide to adjust your offer.</p>
+           <h3 className="text-2xl font-bold text-slate-900 mb-2">Negotiate Closure</h3>
+           <p className="text-slate-700 mb-8 text-base font-semibold">Slide to adjust your offer.</p>
 
            {/* The Slider Section */}
            <div className="mb-8 relative px-2">
-             <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
+             <div className="flex justify-between text-sm font-bold text-slate-600 mb-2 uppercase tracking-wider">
                 <span>Min: ₹{MIN_SETTLEMENT.toLocaleString()}</span>
-                <span>Max: ₹{TOTAL_DUE.toLocaleString()}</span>
+                <span>Max: ₹{MAX_SETTLEMENT.toLocaleString()}</span>
              </div>
              
              <input 
                type="range" 
                min={MIN_SETTLEMENT} 
-               max={TOTAL_DUE} 
+               max={MAX_SETTLEMENT} 
                step={100}
                value={sliderValue}
                onChange={(e) => {
@@ -161,15 +162,15 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                }}
                className={`w-full h-4 rounded-full appearance-none cursor-pointer shadow-inner transition-all duration-300 ${isFullClosure ? 'bg-emerald-100' : 'bg-amber-100'}`}
                style={{
-                 backgroundImage: `linear-gradient(to right, ${isFullClosure ? '#10b981' : '#f59e0b'} 0%, ${isFullClosure ? '#10b981' : '#f59e0b'} ${(sliderValue - MIN_SETTLEMENT)/(TOTAL_DUE - MIN_SETTLEMENT)*100}%, transparent ${(sliderValue - MIN_SETTLEMENT)/(TOTAL_DUE - MIN_SETTLEMENT)*100}%)`
+                 backgroundImage: `linear-gradient(to right, ${isFullClosure ? '#10b981' : '#f59e0b'} 0%, ${isFullClosure ? '#10b981' : '#f59e0b'} ${(sliderValue - MIN_SETTLEMENT)/(MAX_SETTLEMENT - MIN_SETTLEMENT)*100}%, transparent ${(sliderValue - MIN_SETTLEMENT)/(MAX_SETTLEMENT - MIN_SETTLEMENT)*100}%)`
                }}
              />
              
              <div className="text-center mt-4">
-                <div className={`text-3xl font-extrabold transition-colors duration-300 ${isFullClosure ? 'text-emerald-600' : 'text-amber-600'}`}>
+                <div className={`text-4xl font-extrabold transition-colors duration-300 ${isFullClosure ? 'text-emerald-700' : 'text-amber-700'}`}>
                     ₹ {sliderValue.toLocaleString()}
                 </div>
-                <div className="text-xs text-slate-400 font-medium mt-1">Proposed Closure Amount</div>
+                <div className="text-sm text-slate-600 font-semibold mt-2">Proposed Closure Amount</div>
              </div>
            </div>
 
@@ -180,10 +181,10 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                       {isFullClosure ? <TrendingUp size={20} /> : <Wallet size={20} />}
                   </div>
                   <div>
-                      <h4 className={`font-bold text-sm mb-1 transition-colors duration-500 ${themeText}`}>
+                      <h4 className={`font-bold text-base mb-2 transition-colors duration-500 ${themeText}`}>
                           {isFullClosure ? 'Excellent Decision!' : 'You Save Money'}
                       </h4>
-                      <p className="text-xs text-slate-600 leading-relaxed">
+                      <p className="text-sm text-slate-700 leading-relaxed font-medium">
                           {isFullClosure 
                             ? "Paying the full amount protects your CIBIL score and ensures you can get loans in the future."
                             : `You are saving ₹${savings.toLocaleString()} on this loan. However, "Settled" status may lower your credit score.`
@@ -194,12 +195,12 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
               
               {/* Gamification Badge */}
               <div className="mt-4 flex items-center justify-between border-t border-black/5 pt-3">
-                  <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Your Win</div>
-                  <div className={`text-sm font-bold flex items-center gap-1.5 ${isFullClosure ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  <div className="text-sm font-bold text-slate-600 uppercase tracking-wider">Your Win</div>
+                  <div className={`text-base font-bold flex items-center gap-1.5 ${isFullClosure ? 'text-emerald-700' : 'text-amber-700'}`}>
                       {isFullClosure ? (
-                          <><ShieldCheck size={16} /> CIBIL Protected</>
+                          <><ShieldCheck size={18} /> CIBIL Protected</>
                       ) : (
-                          <><Trophy size={16} /> Saved ₹{savings.toLocaleString()}</>
+                          <><Trophy size={18} /> Saved ₹{savings.toLocaleString()}</>
                       )}
                   </div>
               </div>
@@ -209,7 +210,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
               <Button 
                 onClick={() => {
                     // Calculate dynamic redirect based on slider
-                    const isClosure = sliderValue >= TOTAL_DUE;
+                    const isClosure = sliderValue >= MAX_SETTLEMENT;
                     const type = isClosure ? "closure" : "settlement";
                     const msg = `I want to close my loan. My ${type} amount is ₹${sliderValue}. Please send the link.`;
                     const url = `https://wa.me/919008457659?text=${encodeURIComponent(msg)}`;
@@ -232,24 +233,24 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
     if (intent === Intent.UNKNOWN_LOAN) {
       return (
         <div className="animate-fade-in-right">
-          <h3 className="text-xl font-bold text-slate-800 mb-4">Loan Details</h3>
+          <h3 className="text-2xl font-bold text-slate-900 mb-4">Loan Details</h3>
           
           <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 mb-6 space-y-3">
             <div className="flex justify-between">
-              <span className="text-slate-500 text-sm">Lender</span>
-              <span className="font-bold text-slate-800">{borrower?.lender || 'ABC Finance Ltd'}</span>
+              <span className="text-slate-600 text-base font-semibold">Lender</span>
+              <span className="font-bold text-slate-900 text-base">{borrower?.lender || 'ABC Finance Ltd'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 text-sm">Account No</span>
-              <span className="font-bold text-slate-800">{borrower?.account || 'XXXX-9821'}</span>
+              <span className="text-slate-600 text-base font-semibold">Account No</span>
+              <span className="font-bold text-slate-900 text-base">{borrower?.account || 'XXXX-9821'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 text-sm">Loan Amount</span>
-              <span className="font-bold text-slate-800">₹ {TOTAL_DUE.toLocaleString()}</span>
+              <span className="text-slate-600 text-base font-semibold">Loan Amount</span>
+              <span className="font-bold text-slate-900 text-base">₹ {TOTAL_DUE.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500 text-sm">Disbursal Date</span>
-              <span className="font-bold text-slate-800">12 Jan 2023</span>
+              <span className="text-slate-600 text-base font-semibold">Disbursal Date</span>
+              <span className="font-bold text-slate-900 text-base">12 Jan 2023</span>
             </div>
           </div>
 
@@ -278,8 +279,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                     <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
                         <HeartHandshake size={32} />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-3">We understand.</h3>
-                    <p className="text-slate-500 text-sm leading-relaxed mb-8">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-3">We understand.</h3>
+                    <p className="text-slate-700 text-base font-semibold leading-relaxed mb-8">
                         Many borrowers face temporary financial issues. Let's plan a realistic way forward that works for you.
                     </p>
                     <Button onClick={() => next()}>Continue</Button>
@@ -291,8 +292,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         if (internalStep === 2) {
             return (
                 <div className="animate-fade-in-right">
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">What is the main reason?</h3>
-                    <p className="text-slate-500 text-xs mb-6">This helps us categorize your request.</p>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">What is the main reason?</h3>
+                    <p className="text-slate-700 text-sm mb-6 font-semibold">This helps us categorize your request.</p>
                     <div className="space-y-2">
                         {[
                             { id: 'salary_delay', icon: Clock, label: 'Salary delayed' },
@@ -322,8 +323,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         if (internalStep === 3) {
              return (
                 <div className="animate-fade-in-right">
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">When can you pay?</h3>
-                    <p className="text-slate-500 text-xs mb-6">We'll verify this date with the lender.</p>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">When can you pay?</h3>
+                    <p className="text-slate-700 text-sm mb-6 font-semibold">We'll verify this date with the lender.</p>
                     <div className="space-y-3">
                         <BigOptionButton 
                             title="In 3 days" 
@@ -359,7 +360,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         if (internalStep === 4) {
             return (
                 <div className="animate-fade-in-right">
-                    <h3 className="text-xl font-bold text-slate-800 mb-4">Select salary date</h3>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Select salary date</h3>
                     <Input 
                         type="date"
                         label="Expected Date"
@@ -380,7 +381,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         if (internalStep === 5) {
             return (
                 <div className="animate-fade-in-right">
-                    <h3 className="text-xl font-bold text-slate-800 mb-6">Payment Confirmation</h3>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-6">Payment Confirmation</h3>
                     
                     <div className="bg-sky-50 p-4 rounded-2xl border border-sky-100 mb-6">
                         <div className="flex items-center gap-3 mb-2">
@@ -414,8 +415,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         if (internalStep === 10) {
             return (
                 <div className="animate-fade-in-right">
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">We can help you plan.</h3>
-                    <p className="text-slate-500 text-sm mb-6">Would you like to speak to an advisor to figure out a long-term solution?</p>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-2">We can help you plan.</h3>
+                    <p className="text-slate-700 text-base mb-6 font-semibold">Would you like to speak to an advisor to figure out a long-term solution?</p>
                     
                     <div className="space-y-3">
                         <BigOptionButton 
@@ -437,7 +438,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         if (internalStep === 11) {
             return (
                 <div className="animate-fade-in-right">
-                    <h3 className="text-xl font-bold text-slate-800 mb-4">Schedule Callback</h3>
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4">Schedule Callback</h3>
                     <Input 
                         type="datetime-local"
                         label="Choose a convenient time"
@@ -458,8 +459,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
     if (intent === Intent.TALK_TO_ADVISOR) {
          return (
              <div className="animate-fade-in-right">
-                <h3 className="text-xl font-bold text-slate-800 mb-2">We're here to help.</h3>
-                <p className="text-slate-500 mb-6 text-sm">Choose how you'd like to connect with us.</p>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">We're here to help.</h3>
+                <p className="text-slate-700 mb-6 text-base font-semibold">Choose how you'd like to connect with us.</p>
 
                 <div className="space-y-3">
                     <ExternalLinkButton 
@@ -491,8 +492,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
     // --- GENERIC FALLBACK (Docs, Fraud, Paid) ---
     return (
       <div className="animate-fade-in-right">
-        <h3 className="text-xl font-bold text-slate-800 mb-2">Just a few details</h3>
-        <p className="text-slate-500 mb-6 text-sm">So we can process your request immediately.</p>
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">Just a few details</h3>
+        <p className="text-slate-700 mb-6 text-base font-semibold">So we can process your request immediately.</p>
         
         {intent === Intent.ALREADY_PAID && (
           <>
@@ -550,7 +551,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
               placeholder="e.g. I never took this loan, or the amount is wrong..."
             />
             <div className="pt-2">
-                <p className="text-xs text-slate-500 mb-2 font-medium text-center">Or verify directly with our fraud team</p>
+                <p className="text-sm text-slate-600 mb-2 font-semibold text-center">Or verify directly with our fraud team</p>
                 <ExternalLinkButton 
                     href={LINKS.WHATSAPP}
                     icon={ShieldCheck}
@@ -585,7 +586,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         >
           <ArrowLeft size={20} />
         </button>
-        <div className="ml-auto bg-sky-50 text-sky-600 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+        <div className="ml-auto bg-sky-50 text-sky-700 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
           Step 2
         </div>
       </div>

@@ -40,9 +40,9 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
             <div className="w-20 h-20 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-slow">
                 <AlertCircle size={40} className="text-sky-600" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">One Final Step</h2>
-            <p className="text-slate-500 text-sm max-w-xs mx-auto">
-                To process your request for <span className="font-bold text-slate-800">₹{parseInt(amount).toLocaleString()}</span>, please review the timeline below.
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">One Final Step</h2>
+            <p className="text-slate-700 text-base font-semibold max-w-xs mx-auto">
+                To process your request for <span className="font-bold text-slate-900">₹{parseInt(amount).toLocaleString()}</span>, please review the timeline below.
             </p>
         </div>
 
@@ -51,29 +51,29 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
             <div className="border-2 border-sky-100 rounded-[22px] p-5 bg-sky-50/30">
                 <div className="flex items-center gap-2 mb-4 pb-4 border-b border-dashed border-sky-200">
                     <Clock size={18} className="text-sky-600" />
-                    <span className="font-bold text-sky-900 text-sm uppercase tracking-wide">What happens next?</span>
+                    <span className="font-bold text-sky-900 text-base uppercase tracking-wide">What happens next?</span>
                 </div>
 
                 <div className="space-y-4 mb-2">
                     <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-xs shadow-sm">1</div>
+                        <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-sm shadow-sm">1</div>
                         <div>
-                            <div className="font-bold text-slate-800 text-sm">Payment Link</div>
-                            <div className="text-xs text-slate-500 mt-0.5">Generated & sent within <span className="font-bold text-sky-600">24 Hours</span> via WhatsApp.</div>
+                            <div className="font-bold text-slate-900 text-base">Payment Link</div>
+                            <div className="text-sm text-slate-600 mt-1 font-semibold">Generated & sent within <span className="font-bold text-sky-700">24 Hours</span> via WhatsApp.</div>
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-xs shadow-sm">2</div>
+                        <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-sm shadow-sm">2</div>
                         <div>
-                            <div className="font-bold text-slate-800 text-sm">NOC Issuance</div>
-                            <div className="text-xs text-slate-500 mt-0.5">Document delivered in <span className="font-bold text-sky-600">30 Days</span> post payment.</div>
+                            <div className="font-bold text-slate-900 text-base">NOC Issuance</div>
+                            <div className="text-sm text-slate-600 mt-1 font-semibold">Document delivered in <span className="font-bold text-sky-700">30 Days</span> post payment.</div>
                         </div>
                     </div>
                     <div className="flex gap-3">
-                         <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-xs shadow-sm">3</div>
+                         <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-sm shadow-sm">3</div>
                         <div>
-                            <div className="font-bold text-slate-800 text-sm">Confirmation</div>
-                            <div className="text-xs text-slate-500 mt-0.5">Email receipt sent within <span className="font-bold text-sky-600">24 Hours</span>.</div>
+                            <div className="font-bold text-slate-900 text-base">Confirmation</div>
+                            <div className="text-sm text-slate-600 mt-1 font-semibold">Email receipt sent within <span className="font-bold text-sky-700">24 Hours</span>.</div>
                         </div>
                     </div>
                 </div>
@@ -106,9 +106,9 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
              <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <UserCheck size={40} className="text-emerald-600" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Commitment Noted</h2>
-            <p className="text-slate-500 text-sm mb-8 max-w-xs mx-auto">
-                Thank you. We have recorded your promise to pay <span className="font-bold text-slate-800">₹{data.ptpAmount}</span> on <span className="font-bold text-slate-800">{new Date(data.ptpDate).toLocaleDateString()}</span>.
+            <h2 className="text-3xl font-bold text-slate-900 mb-2">Commitment Noted</h2>
+            <p className="text-slate-700 text-base font-semibold mb-8 max-w-xs mx-auto">
+                Thank you. We have recorded your promise to pay <span className="font-bold text-slate-900">₹{data.ptpAmount}</span> on <span className="font-bold text-slate-900">{new Date(data.ptpDate).toLocaleDateString()}</span>.
             </p>
 
             <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-lg shadow-sky-100/50 text-left mb-6">
@@ -119,15 +119,15 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
                     <div className="flex gap-3 items-start">
                         <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-xs font-bold text-slate-600 mt-0.5">1</div>
                         <div>
-                            <p className="text-sm font-bold text-slate-700">Save our Number</p>
-                            <p className="text-xs text-slate-500 mt-1">Save <span className="font-mono bg-slate-100 px-1 rounded text-slate-700">+91-9008457659</span> to ensure you don't miss the payment link.</p>
+                            <p className="text-base font-bold text-slate-800">Save our Number</p>
+                            <p className="text-sm text-slate-600 mt-1 font-semibold">Save <span className="font-mono bg-slate-100 px-1 rounded text-slate-800">+91-9008457659</span> to ensure you don't miss the payment link.</p>
                         </div>
                     </div>
                     <div className="flex gap-3 items-start">
-                        <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-xs font-bold text-slate-600 mt-0.5">2</div>
+                        <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center text-sm font-bold text-slate-700 mt-0.5">2</div>
                          <div>
-                            <p className="text-sm font-bold text-slate-700">Establish Connection</p>
-                            <p className="text-xs text-slate-500 mt-1">Click below to say "Hi" on WhatsApp so we can send the link on due date.</p>
+                            <p className="text-base font-bold text-slate-800">Establish Connection</p>
+                            <p className="text-sm text-slate-600 mt-1 font-semibold">Click below to say "Hi" on WhatsApp so we can send the link on due date.</p>
                         </div>
                     </div>
                 </div>
@@ -231,8 +231,8 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
         <Check size={48} className="text-white" strokeWidth={4} />
       </div>
 
-      <h2 className="text-3xl font-bold text-slate-800 mb-2 drop-shadow-sm">Request Sent!</h2>
-      <p className="text-slate-500 mb-8 font-medium max-w-xs mx-auto leading-relaxed">
+      <h2 className="text-3xl font-bold text-slate-900 mb-2 drop-shadow-sm">Request Sent!</h2>
+      <p className="text-slate-700 mb-8 font-semibold text-base max-w-xs mx-auto leading-relaxed">
         You can close this window now. We've got it from here.
       </p>
 
@@ -245,13 +245,13 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
                         <Sun size={16} />
                     </div>
                     <div>
-                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</div>
-                        <div className="font-bold text-slate-800 leading-none">{content.status}</div>
+                        <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Status</div>
+                        <div className="font-bold text-slate-900 leading-none text-base">{content.status}</div>
                     </div>
                 </div>
                 <div className="text-right">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date</div>
-                    <div className="font-bold text-slate-800 leading-none">{new Date().toLocaleDateString()}</div>
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Date</div>
+                    <div className="font-bold text-slate-900 leading-none text-base">{new Date().toLocaleDateString()}</div>
                 </div>
             </div>
 
@@ -261,8 +261,8 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
             </div>
             
             <div className="mb-4">
-                <p className="text-sm font-bold text-slate-800 mb-1">{content.title}</p>
-                <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                <p className="text-base font-bold text-slate-900 mb-1">{content.title}</p>
+                <p className="text-sm text-slate-700 font-semibold leading-relaxed">
                     {content.desc}
                 </p>
             </div>
@@ -271,7 +271,7 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset }) => {
                 {content.points.map((p, i) => (
                     <div key={i} className="flex items-center gap-2.5">
                         <p.icon size={14} className="text-sky-500 shrink-0" />
-                        <span className="text-xs font-bold text-slate-600">{p.text}</span>
+                        <span className="text-sm font-bold text-slate-700">{p.text}</span>
                     </div>
                 ))}
             </div>

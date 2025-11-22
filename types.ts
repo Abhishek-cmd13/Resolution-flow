@@ -62,10 +62,13 @@ export interface FormData {
 
 export interface BorrowerProfile {
   name?: string;
+  phone?: string;
+  email?: string;
   amount?: string;
   lender?: string;
   account?: string;
   min_settlement?: string;
+  max_settlement?: string; // Total maximum settlement amount
 }
 
 export type Step = 1 | 2 | 3;

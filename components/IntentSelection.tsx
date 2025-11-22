@@ -1,9 +1,10 @@
 import React from 'react';
-import { Intent } from '../types';
+import { Intent, BorrowerProfile } from '../types';
 import { HandCoins, MessageCircleHeart, FileText, ShieldAlert, ChevronRight, HelpCircle, Clock, CheckCircle, HeartHandshake } from 'lucide-react';
 
 interface Props {
   onSelect: (intent: Intent) => void;
+  borrower?: BorrowerProfile;
 }
 
 const sections = [
@@ -64,15 +65,21 @@ const sections = [
   }
 ];
 
-export const IntentSelection: React.FC<Props> = ({ onSelect }) => {
+export const IntentSelection: React.FC<Props> = ({ onSelect, borrower }) => {
   // Flatten items for a grid view
   const allItems = sections.flatMap(s => s.items);
+  
+  // Create personalized heading
+  const borrowerName = borrower?.name || '';
+  const heading = borrowerName 
+    ? `We are here to help you ${borrowerName}`
+    : 'We are here to help you';
 
   return (
     <div className="animate-fade-in-up pb-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-slate-800 mb-2 drop-shadow-sm">How can we help?</h2>
-        <p className="text-slate-600 font-medium text-sm">Select the option that fits best.</p>
+        <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-md">{heading}</h2>
+        <p className="text-white font-semibold text-base drop-shadow-sm">Select the option that fits best.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
@@ -85,8 +92,8 @@ export const IntentSelection: React.FC<Props> = ({ onSelect }) => {
                 <HandCoins size={24} />
             </div>
             <div className="flex-1">
-                <div className="text-[15px] font-bold text-slate-800">Close & Settle</div>
-                <div className="text-xs text-slate-500 font-medium mt-0.5">I want to negotiate a closure amount</div>
+                <div className="text-base font-bold text-slate-900">Close & Settle</div>
+                <div className="text-sm text-slate-600 font-medium mt-1">I want to negotiate a closure amount</div>
             </div>
             <ChevronRight size={18} className="text-slate-300 group-hover:text-sky-500 transition-colors" />
         </button>
@@ -101,8 +108,8 @@ export const IntentSelection: React.FC<Props> = ({ onSelect }) => {
             <div className={`w-10 h-10 rounded-xl ${item.iconBg} ${item.color} flex items-center justify-center mb-3 shadow-inner`}>
                 <item.icon size={20} />
             </div>
-            <div className="text-sm font-bold text-slate-800 leading-tight">{item.title}</div>
-            <div className="text-[10px] text-slate-500 font-medium mt-1 leading-tight">{item.desc}</div>
+            <div className="text-base font-bold text-slate-900 leading-tight">{item.title}</div>
+            <div className="text-xs text-slate-600 font-semibold mt-1 leading-tight">{item.desc}</div>
             </button>
         ))}
       </div>
@@ -111,15 +118,15 @@ export const IntentSelection: React.FC<Props> = ({ onSelect }) => {
       <div className="flex justify-center gap-3 mt-6">
         <button 
           onClick={() => onSelect(Intent.DOCUMENTS)}
-          className="text-xs font-semibold text-slate-600 hover:text-sky-800 flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/30 border border-white/40 hover:bg-white/50 transition-all shadow-sm"
+          className="text-sm font-bold text-slate-700 hover:text-sky-900 flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/30 border border-white/40 hover:bg-white/50 transition-all shadow-sm"
         >
-          <FileText size={14} /> Get Document
+          <FileText size={16} /> Get Document
         </button>
         <button 
           onClick={() => onSelect(Intent.FRAUD_CONCERN)}
-          className="text-xs font-semibold text-slate-600 hover:text-rose-800 flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/30 border border-white/40 hover:bg-white/50 transition-all shadow-sm"
+          className="text-sm font-bold text-slate-700 hover:text-rose-900 flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/30 border border-white/40 hover:bg-white/50 transition-all shadow-sm"
         >
-          <ShieldAlert size={14} /> Report Issue
+          <ShieldAlert size={16} /> Report Issue
         </button>
       </div>
     </div>

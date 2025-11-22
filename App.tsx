@@ -4,13 +4,26 @@ import { ProgressBar } from './components/ProgressBar';
 import { IntentSelection } from './components/IntentSelection';
 import { DetailsForm } from './components/DetailsForm';
 import { Summary } from './components/Summary';
-import { Intent, Step, FormData } from './types';
+import { Intent, Step, FormData, BorrowerProfile } from './types';
 import { Card } from './components/ui/Base';
+import { extractBorrowerFromURL } from './utils/tokenDecrypt';
 
 function App() {
   const [step, setStep] = useState<Step>(1);
   const [intent, setIntent] = useState<Intent | null>(null);
   const [formData, setFormData] = useState<FormData>({});
+  const [borrower, setBorrower] = useState<BorrowerProfile | null>(null);
+
+  // Extract borrower information from URL on mount
+  useEffect(() => {
+    const borrowerData = extractBorrowerFromURL();
+    if (borrowerData) {
+      setBorrower(borrowerData);
+      console.log('[App] Borrower data loaded from URL:', borrowerData);
+    } else {
+      console.log('[App] No borrower data found in URL');
+    }
+  }, []);
 
   // detailed logging
   useEffect(() => {
@@ -61,14 +74,14 @@ function App() {
       <div className="w-full max-w-[440px] mx-auto relative z-10">
         
         <div className="mb-6 text-center">
-           <Header />
+           <Header borrower={borrower || undefined} />
         </div>
 
         {step < 3 && <ProgressBar step={step} />}
 
         <main>
             {step === 1 && (
-              <IntentSelection onSelect={handleIntentSelect} />
+              <IntentSelection onSelect={handleIntentSelect} borrower={borrower || undefined} />
             )}
             
             {step === 2 && intent && (
@@ -80,6 +93,7 @@ function App() {
                   initialData={formData}
                   onSubmit={handleFormSubmit}
                   onBack={handleBack}
+                  borrower={borrower || undefined}
                 />
               </Card>
             )}
