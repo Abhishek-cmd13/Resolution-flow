@@ -100,8 +100,23 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
 
   // Handling NEED_TIME (PTP Flow V2) - "Save Contact" Screen
   if (intent === Intent.NEED_TIME && data.ptpDate) {
-      const waPaymentLink = `https://wa.me/919008457659?text=I%20have%20committed%20to%20pay%20₹${data.ptpAmount}%20on%20${data.ptpDate}.%20Please%20send%20link.`;
-      const waConnectLink = `https://wa.me/919008457659?text=Connecting%20to%20stay%20updated%20on%20my%20payment%20commitment.`;
+      // Map reason IDs to human-readable text
+      const reasonMap: { [key: string]: string } = {
+        'salary_delay': 'salary delay',
+        'job_loss': 'job loss / reduced income',
+        'medical_issue': 'medical or family',
+        'business_issue': 'business slowdown',
+        'unexpected_expense': 'unexpected expenses',
+        'no_comment': 'financial'
+      };
+      
+      const reasonText = reasonMap[data.needTimeReason || ''] || 'financial';
+      const formattedDate = data.ptpDate ? new Date(data.ptpDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+      const amount = data.ptpAmount || '';
+      
+      // Construct WhatsApp message with all collected data
+      const whatsappMessage = `I am facing ${reasonText} issues, and I will pay ₹${amount} on or before ${formattedDate}. Wanted to send a number so that you can help me out later.`;
+      const waConnectLink = `https://wa.me/919008457659?text=${encodeURIComponent(whatsappMessage)}`;
 
       return (
         <div className="animate-scale-in pt-4 text-center">
@@ -137,17 +152,11 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
 
             <div className="space-y-3">
                 <Button 
-                    onClick={() => window.open(waPaymentLink, '_blank')}
+                    onClick={() => window.open(waConnectLink, '_blank')}
                     className="from-emerald-500 to-green-600 shadow-emerald-200"
                 >
                     <MessageCircle size={18} />
-                    Get Link on WhatsApp Now
-                </Button>
-                <Button 
-                    onClick={() => window.open(waConnectLink, '_blank')}
-                    variant="soft"
-                >
-                    Just Connect on WhatsApp
+                    Get Connected on WhatsApp
                 </Button>
             </div>
             <Button variant="ghost" onClick={onReset} className="mt-4">

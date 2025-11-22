@@ -44,6 +44,15 @@ function App() {
 
   const handleFormSubmit = (data: FormData) => {
     console.log('[User Action] Form Submitted', data);
+    
+    // Check if we need to redirect to TALK_TO_ADVISOR intent
+    if (data.redirectToAdvisor) {
+      setIntent(Intent.TALK_TO_ADVISOR);
+      setFormData({ ...data, redirectToAdvisor: false }); // Clear the flag
+      setStep(2); // Stay on step 2 to show the advisor page
+      return;
+    }
+    
     setFormData(data);
     setStep(3);
   };

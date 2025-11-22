@@ -185,6 +185,15 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
            </h3>
            <p className="text-slate-700 mb-6 text-base font-semibold">Slide to adjust your offer.</p>
 
+           {/* Loan Source Information */}
+           {borrower?.nbfcName && borrower?.bankName && (
+             <div className="bg-sky-50 rounded-2xl p-4 border border-sky-200 mb-6">
+               <p className="text-sm text-slate-700 font-medium text-center">
+                 The loan was obtained from <span className="font-bold text-slate-900">{borrower.nbfcName}</span> through <span className="font-bold text-slate-900">{borrower.bankName}</span>.
+               </p>
+             </div>
+           )}
+
            {/* Total Outstanding Display */}
            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-6">
              <div className="flex justify-between items-center">
@@ -263,7 +272,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                       )}
                       <p className="text-sm text-slate-700 leading-relaxed font-medium">
                           {isFullClosure 
-                            ? `Paying ₹${MAX_SETTLEMENT.toLocaleString()} (full outstanding of ₹${TOTAL_DUE.toLocaleString()}) protects your CIBIL score and increases probability of getting loan in future.`
+                            ? `Paying ₹${MAX_SETTLEMENT.toLocaleString()} protects your CIBIL score and increases probability of getting loan in future.`
                             : `You are saving ₹${savings.toLocaleString()} on this loan (outstanding: ₹${TOTAL_DUE.toLocaleString()}). However, "Settled" status may lower your credit score.`
                           }
                       </p>
@@ -295,19 +304,15 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
           <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 mb-6 space-y-3">
             <div className="flex justify-between">
               <span className="text-slate-600 text-base font-semibold">Lender</span>
-              <span className="font-bold text-slate-900 text-base">{borrower?.lender || 'ABC Finance Ltd'}</span>
+              <span className="font-bold text-slate-900 text-base">{borrower?.nbfcName || borrower?.lender || 'Unknown'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600 text-base font-semibold">Account No</span>
-              <span className="font-bold text-slate-900 text-base">{borrower?.account || 'XXXX-9821'}</span>
+              <span className="text-slate-600 text-base font-semibold">Provider</span>
+              <span className="font-bold text-slate-900 text-base">{borrower?.bankName || 'Unknown'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-600 text-base font-semibold">Loan Amount</span>
+              <span className="text-slate-600 text-base font-semibold">Principal Outstanding Amount</span>
               <span className="font-bold text-slate-900 text-base">₹ {TOTAL_DUE.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-600 text-base font-semibold">Disbursal Date</span>
-              <span className="font-bold text-slate-900 text-base">12 Jan 2023</span>
             </div>
           </div>
 
@@ -320,7 +325,23 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
              <BigOptionButton 
               title="No, this isn't mine" 
               subtitle="Report as incorrect mapping"
-              onClick={() => onSubmit({ ...data, fraudText: 'Loan mapping incorrect' })}
+              onClick={() => {
+                console.log('[DetailsForm] Borrower data when clicking "No, this isn\'t mine":', borrower);
+                const nbfcName = borrower?.nbfcName || 'Unknown';
+                const bankName = borrower?.bankName || 'Unknown';
+                console.log('[DetailsForm] Using nbfcName:', nbfcName, 'bankName:', bankName);
+                
+                // If we have borrower data but both are Unknown, use a generic message
+                let whatsappText;
+                if (nbfcName === 'Unknown' && bankName === 'Unknown') {
+                  whatsappText = "This loan is not related to me";
+                } else {
+                  whatsappText = `The loan was obtained from ${nbfcName} through ${bankName} is not related to me`;
+                }
+                
+                const whatsappUrl = `https://wa.me/919008457659?text=${encodeURIComponent(whatsappText)}`;
+                window.open(whatsappUrl, '_blank');
+              }}
             />
           </div>
         </div>
@@ -329,24 +350,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
 
     // --- NEED TIME (FUTURE PAYMENT FLOW V2) ---
     if (intent === Intent.NEED_TIME) {
-        // Step 1: Intro Ack
+        // Step 1: Reason Picker (removed intro page)
         if (internalStep === 1) {
-            return (
-                <div className="animate-fade-in-right">
-                    <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
-                        <HeartHandshake size={32} />
-                    </div>
-                    <h3 className="text-2xl font-bold text-slate-900 mb-3">We understand.</h3>
-                    <p className="text-slate-700 text-base font-semibold leading-relaxed mb-8">
-                        Many borrowers face temporary financial issues. Let's plan a realistic way forward that works for you.
-                    </p>
-                    <Button onClick={() => next()}>Continue</Button>
-                </div>
-            );
-        }
-        
-        // Step 2: Reason Picker
-        if (internalStep === 2) {
             return (
                 <div className="animate-fade-in-right">
                     <h3 className="text-2xl font-bold text-slate-900 mb-2">What is the main reason?</h3>
@@ -376,45 +381,35 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
             );
         }
 
-        // Step 3: Timeline Picker
-        if (internalStep === 3) {
+        // Step 2: Timeline Picker
+        if (internalStep === 2) {
              return (
                 <div className="animate-fade-in-right">
                     <h3 className="text-2xl font-bold text-slate-900 mb-2">When can you pay?</h3>
                     <p className="text-slate-700 text-sm mb-6 font-semibold">We'll verify this date with the lender.</p>
                     <div className="space-y-3">
                         <BigOptionButton 
-                            title="In 3 days" 
-                            subtitle={`Approx ${new Date(Date.now() + 3*24*60*60*1000).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}`}
-                            onClick={() => { update('ptpDate', getFutureDate(3)); setInternalStep(5); }} // Jump to Payment Confirmation
+                            title="15 days" 
+                            subtitle={`Approx ${new Date(Date.now() + 15*24*60*60*1000).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}`}
+                            onClick={() => { update('ptpDate', getFutureDate(15)); setInternalStep(4); }} // Jump to Payment Confirmation
                         />
                         <BigOptionButton 
-                            title="In 7 days" 
-                            subtitle={`Approx ${new Date(Date.now() + 7*24*60*60*1000).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}`}
-                            onClick={() => { update('ptpDate', getFutureDate(7)); setInternalStep(5); }} // Jump to Payment Confirmation
-                        />
-                        <BigOptionButton 
-                            title="In 1 month" 
-                            subtitle={`Approx ${new Date(Date.now() + 30*24*60*60*1000).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}`}
-                            onClick={() => { update('ptpDate', getFutureDate(30)); setInternalStep(5); }} // Jump to Payment Confirmation
-                        />
-                        <BigOptionButton 
-                            title="On salary date" 
-                            subtitle="Choose a specific date"
-                            onClick={() => setInternalStep(4)} // Jump to Salary Date Picker
+                            title="50 days" 
+                            subtitle={`Approx ${new Date(Date.now() + 50*24*60*60*1000).toLocaleDateString('en-GB', {day:'numeric', month:'short'})}`}
+                            onClick={() => { update('ptpDate', getFutureDate(50)); setInternalStep(4); }} // Jump to Payment Confirmation
                         />
                         <BigOptionButton 
                             title="Not sure" 
                             subtitle="I can't commit right now"
-                            onClick={() => setInternalStep(10)} // Jump to Not Sure Path
+                            onClick={() => setInternalStep(9)} // Jump to Not Sure Path
                         />
                     </div>
                 </div>
              );
         }
 
-        // Step 4: Salary Date Picker
-        if (internalStep === 4) {
+        // Step 3: Salary Date Picker
+        if (internalStep === 3) {
             return (
                 <div className="animate-fade-in-right">
                     <h3 className="text-2xl font-bold text-slate-900 mb-4">Select salary date</h3>
@@ -426,7 +421,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                     />
                     <Button 
                         disabled={!data.ptpDate}
-                        onClick={() => setInternalStep(5)}
+                        onClick={() => setInternalStep(4)}
                     >
                         Continue
                     </Button>
@@ -434,8 +429,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
             );
         }
 
-        // Step 5: Payment Confirmation (Amount + Date)
-        if (internalStep === 5) {
+        // Step 4: Payment Confirmation (Amount + Date)
+        if (internalStep === 4) {
             return (
                 <div className="animate-fade-in-right">
                     <h3 className="text-2xl font-bold text-slate-900 mb-6">Payment Confirmation</h3>
@@ -450,16 +445,59 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                         </div>
                     </div>
 
-                    <Input 
-                        label="Enter the amount you will pay"
-                        type="number"
-                        placeholder={`Total Due: ₹${TOTAL_DUE}`}
-                        value={data.ptpAmount || ''}
-                        onChange={(e) => update('ptpAmount', e.target.value)}
-                    />
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold text-slate-700 mb-3">Select payment type</label>
+                        <div className="space-y-3">
+                            <label className={`flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                                data.ptpAmount === MIN_SETTLEMENT.toString() 
+                                    ? 'border-sky-500 bg-sky-50' 
+                                    : 'border-slate-200 bg-white hover:bg-sky-50 hover:border-sky-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={data.ptpAmount === MIN_SETTLEMENT.toString()}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            update('ptpAmount', MIN_SETTLEMENT.toString());
+                                        } else {
+                                            update('ptpAmount', '');
+                                        }
+                                    }}
+                                    className="w-5 h-5 rounded border-2 border-slate-300 text-sky-600 focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 mr-4 cursor-pointer"
+                                />
+                                <div className="flex-1">
+                                    <div className="font-bold text-slate-900">Settle</div>
+                                    <div className="text-sm text-slate-600 font-semibold">Settlement Amount: ₹{MIN_SETTLEMENT.toLocaleString()}</div>
+                                </div>
+                            </label>
+                            
+                            <label className={`flex items-center p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                                data.ptpAmount === MAX_SETTLEMENT.toString() 
+                                    ? 'border-sky-500 bg-sky-50' 
+                                    : 'border-slate-200 bg-white hover:bg-sky-50 hover:border-sky-300'
+                            }`}>
+                                <input
+                                    type="checkbox"
+                                    checked={data.ptpAmount === MAX_SETTLEMENT.toString()}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            update('ptpAmount', MAX_SETTLEMENT.toString());
+                                        } else {
+                                            update('ptpAmount', '');
+                                        }
+                                    }}
+                                    className="w-5 h-5 rounded border-2 border-slate-300 text-sky-600 focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 mr-4 cursor-pointer"
+                                />
+                                <div className="flex-1">
+                                    <div className="font-bold text-slate-900">Close</div>
+                                    <div className="text-sm text-slate-600 font-semibold">Closure Amount: ₹{MAX_SETTLEMENT.toLocaleString()}</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
 
                     <Button 
-                        disabled={!data.ptpAmount} 
+                        disabled={!data.ptpAmount || (data.ptpAmount !== MIN_SETTLEMENT.toString() && data.ptpAmount !== MAX_SETTLEMENT.toString())} 
                         onClick={() => onSubmit(data)} // Goes to Summary -> Save Contact
                     >
                         Confirm Commitment
@@ -469,7 +507,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         }
 
         // Step 10: Not Sure Path
-        if (internalStep === 10) {
+        if (internalStep === 9) {
             return (
                 <div className="animate-fade-in-right">
                     <h3 className="text-2xl font-bold text-slate-900 mb-2">We can help you plan.</h3>
@@ -479,12 +517,11 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                         <BigOptionButton 
                             title="Talk to an advisor" 
                             subtitle="Schedule a call"
-                            onClick={() => { update('notSureChoice', 'advisor'); setInternalStep(11); }}
-                        />
-                        <BigOptionButton 
-                            title="Prefer not to talk" 
-                            subtitle="Just save my request"
-                            onClick={() => { update('notSureChoice', 'no_talk'); onSubmit(data); }}
+                            onClick={() => { 
+                                update('notSureChoice', 'advisor');
+                                // Redirect to TALK_TO_ADVISOR intent by submitting with special flag
+                                onSubmit({ ...data, notSureChoice: 'advisor', redirectToAdvisor: true });
+                            }}
                         />
                     </div>
                 </div>
@@ -492,7 +529,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
         }
 
         // Step 11: Advisor Scheduler
-        if (internalStep === 11) {
+        if (internalStep === 10) {
             return (
                 <div className="animate-fade-in-right">
                     <h3 className="text-2xl font-bold text-slate-900 mb-4">Schedule Callback</h3>
@@ -546,34 +583,35 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
          );
     }
 
-    // --- GENERIC FALLBACK (Docs, Fraud, Paid) ---
+    // --- ALREADY PAID ---
+    if (intent === Intent.ALREADY_PAID) {
+      const whatsappText = "I have already settled my amount, please help me update it.";
+      const whatsappUrl = `https://wa.me/919008457659?text=${encodeURIComponent(whatsappText)}`;
+      
+      return (
+        <div className="animate-fade-in-right">
+          <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-6">
+            <p className="text-base text-slate-700 font-semibold text-center leading-relaxed">
+              We understand how frustrating it is to pay and still receive collection calls.
+            </p>
+          </div>
+          
+          <Button 
+            onClick={() => window.open(whatsappUrl, '_blank')}
+            className="from-emerald-500 to-green-600 shadow-emerald-200"
+          >
+            <MessageCircle size={18} />
+            Contact on WhatsApp
+          </Button>
+        </div>
+      );
+    }
+
+    // --- GENERIC FALLBACK (Docs, Fraud) ---
     return (
       <div className="animate-fade-in-right">
         <h3 className="text-2xl font-bold text-slate-900 mb-2">Just a few details</h3>
         <p className="text-slate-700 mb-6 text-base font-semibold">So we can process your request immediately.</p>
-        
-        {intent === Intent.ALREADY_PAID && (
-          <>
-            <Input 
-              label="Amount Paid" 
-              type="number" 
-              value={data.paidAmount || ''} 
-              onChange={e => update('paidAmount', e.target.value)}
-            />
-            <Input 
-              label="Date" 
-              type="date" 
-              value={data.paidDate || ''} 
-              onChange={e => update('paidDate', e.target.value)}
-            />
-             <Input 
-              label="UTR / Reference No. (Optional)" 
-              type="text" 
-              value={data.paidUtr || ''} 
-              onChange={e => update('paidUtr', e.target.value)}
-            />
-          </>
-        )}
 
         {intent === Intent.DOCUMENTS && (
             <div className="space-y-4">

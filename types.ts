@@ -42,6 +42,7 @@ export interface FormData {
   // Not Sure Path
   notSureChoice?: 'advisor' | 'no_talk';
   callbackTime?: string;
+  redirectToAdvisor?: boolean; // Flag to redirect to TALK_TO_ADVISOR intent
 
   // Hardship
   hardshipType?: string;
@@ -69,6 +70,8 @@ export interface BorrowerProfile {
   account?: string;
   min_settlement?: string;
   max_settlement?: string; // Total maximum settlement amount
+  bankName?: string;
+  nbfcName?: string;
 }
 
 export type Step = 1 | 2 | 3;
