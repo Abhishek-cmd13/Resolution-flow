@@ -58,24 +58,24 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
 
                 <div className="space-y-4 mb-2">
                     <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-sm shadow-sm">1</div>
+                        <div className="w-8 h-8 rounded-full bg-white border-2 border-sky-500 flex items-center justify-center shrink-0 text-sky-600 font-extrabold text-base shadow-sm">1</div>
                         <div>
-                            <div className="font-bold text-slate-900 text-base">Payment Link</div>
-                            <div className="text-sm text-slate-600 mt-1 font-semibold">Generated & sent within <span className="font-bold text-sky-700">24 Hours</span> via WhatsApp.</div>
+                            <div className="font-extrabold text-slate-900 text-lg">Payment Link</div>
+                            <div className="text-base text-slate-700 mt-1 font-bold">24 Hours via WhatsApp</div>
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-sm shadow-sm">2</div>
+                        <div className="w-8 h-8 rounded-full bg-white border-2 border-sky-500 flex items-center justify-center shrink-0 text-sky-600 font-extrabold text-base shadow-sm">2</div>
                         <div>
-                            <div className="font-bold text-slate-900 text-base">NOC Issuance</div>
-                            <div className="text-sm text-slate-600 mt-1 font-semibold">Document delivered in <span className="font-bold text-sky-700">30 Days</span> post payment.</div>
+                            <div className="font-extrabold text-slate-900 text-lg">NOC Issuance</div>
+                            <div className="text-base text-slate-700 mt-1 font-bold">30 Days post payment</div>
                         </div>
                     </div>
                     <div className="flex gap-3">
-                         <div className="w-8 h-8 rounded-full bg-white border border-sky-100 flex items-center justify-center shrink-0 text-sky-600 font-bold text-sm shadow-sm">3</div>
+                         <div className="w-8 h-8 rounded-full bg-white border-2 border-sky-500 flex items-center justify-center shrink-0 text-sky-600 font-extrabold text-base shadow-sm">3</div>
                         <div>
-                            <div className="font-bold text-slate-900 text-base">Confirmation</div>
-                            <div className="text-sm text-slate-600 mt-1 font-semibold">Email receipt sent within <span className="font-bold text-sky-700">24 Hours</span>.</div>
+                            <div className="font-extrabold text-slate-900 text-lg">Confirmation</div>
+                            <div className="text-base text-slate-700 mt-1 font-bold">24 Hours via Email</div>
                         </div>
                     </div>
                 </div>
