@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { ProgressBar } from './components/ProgressBar';
 import { IntentSelection } from './components/IntentSelection';
@@ -13,22 +12,34 @@ function App() {
   const [intent, setIntent] = useState<Intent | null>(null);
   const [formData, setFormData] = useState<FormData>({});
 
+  // detailed logging
+  useEffect(() => {
+    console.log(`[App State Update] Step: ${step}, Intent: ${intent || 'None'}`);
+    if (Object.keys(formData).length > 0) {
+      console.log('[App Data Update]', formData);
+    }
+  }, [step, intent, formData]);
+
   const handleIntentSelect = (selectedIntent: Intent) => {
+    console.log(`[User Action] Selected Intent: ${selectedIntent}`);
     setIntent(selectedIntent);
     setStep(2);
   };
 
   const handleFormSubmit = (data: FormData) => {
+    console.log('[User Action] Form Submitted', data);
     setFormData(data);
     setStep(3);
   };
 
   const handleBack = () => {
+    console.log('[User Action] Navigate Back');
     setStep(1);
     setIntent(null);
   };
 
   const handleReset = () => {
+    console.log('[User Action] Reset Application');
     setStep(1);
     setIntent(null);
     setFormData({});
