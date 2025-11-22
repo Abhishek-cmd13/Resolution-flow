@@ -57,26 +57,17 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
                 </div>
 
                 <div className="space-y-4 mb-2">
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 items-center">
                         <div className="w-8 h-8 rounded-full bg-white border-2 border-sky-500 flex items-center justify-center shrink-0 text-sky-600 font-extrabold text-base shadow-sm">1</div>
-                        <div>
-                            <div className="font-extrabold text-slate-900 text-lg">Payment Link</div>
-                            <div className="text-base text-slate-700 mt-1 font-bold">24 Hours via WhatsApp</div>
-                        </div>
+                        <div className="font-extrabold text-slate-900 text-lg">Payment Link - 24 Hours via WhatsApp</div>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 items-center">
                         <div className="w-8 h-8 rounded-full bg-white border-2 border-sky-500 flex items-center justify-center shrink-0 text-sky-600 font-extrabold text-base shadow-sm">2</div>
-                        <div>
-                            <div className="font-extrabold text-slate-900 text-lg">NOC Issuance</div>
-                            <div className="text-base text-slate-700 mt-1 font-bold">30 Days post payment</div>
-                        </div>
+                        <div className="font-extrabold text-slate-900 text-lg">NOC Issuance - 30 Days post payment</div>
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 items-center">
                          <div className="w-8 h-8 rounded-full bg-white border-2 border-sky-500 flex items-center justify-center shrink-0 text-sky-600 font-extrabold text-base shadow-sm">3</div>
-                        <div>
-                            <div className="font-extrabold text-slate-900 text-lg">Confirmation</div>
-                            <div className="text-base text-slate-700 mt-1 font-bold">24 Hours via Email</div>
-                        </div>
+                        <div className="font-extrabold text-slate-900 text-lg">Confirmation - 24 Hours via Email</div>
                     </div>
                 </div>
             </div>
