@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Intent, FormData, BorrowerProfile } from '../types';
 import { Button, Input, BigOptionButton, ExternalLinkButton, Textarea } from './ui/Base';
 import { ArrowLeft, CreditCard, Smartphone, HeartHandshake, Phone, Calendar, MessageCircle, ShieldCheck, TrendingUp, Wallet, Clock, Briefcase, AlertTriangle, HelpCircle, CheckCircle, Trophy } from 'lucide-react';
+import { trackPaymentType, trackSettlementChange, trackExternalLink } from '../utils/mixpanel';
 
 interface Props {
   intent: Intent;
@@ -104,19 +105,31 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                 title="Full Outstanding" 
                 subtitle={`₹ ${TOTAL_DUE.toLocaleString()} (Closes account)`}
                 selected={data.payAmountType === 'full'}
-                onClick={() => { update('payAmountType', 'full'); next(); }}
+                onClick={() => { 
+                  trackPaymentType('full', TOTAL_DUE.toString(), borrower);
+                  update('payAmountType', 'full'); 
+                  next(); 
+                }}
               />
               <BigOptionButton 
                 title="Current EMI" 
                 subtitle="₹ 4,200 (Updates status)"
                 selected={data.payAmountType === 'emi'}
-                onClick={() => { update('payAmountType', 'emi'); next(); }}
+                onClick={() => { 
+                  trackPaymentType('emi', '4200', borrower);
+                  update('payAmountType', 'emi'); 
+                  next(); 
+                }}
               />
               <BigOptionButton 
                 title="Enter Custom Amount" 
                 subtitle="Pay what you can"
                 selected={data.payAmountType === 'custom'}
-                onClick={() => { update('payAmountType', 'custom'); next(); }}
+                onClick={() => { 
+                  trackPaymentType('custom', undefined, borrower);
+                  update('payAmountType', 'custom'); 
+                  next(); 
+                }}
               />
             </div>
           </div>
@@ -145,14 +158,20 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                 title="UPI" 
                 subtitle="GPay, PhonePe, Paytm"
                 selected={data.payMode === 'upi'}
-                onClick={() => update('payMode', 'upi')}
+                onClick={() => {
+                  trackPaymentType('upi', data.payCustomAmount || data.payAmountType === 'full' ? TOTAL_DUE.toString() : '4200', borrower);
+                  update('payMode', 'upi');
+                }}
               />
                <BigOptionButton 
                 icon={CreditCard}
                 title="Card / Netbanking" 
                 subtitle="Debit / Credit Card"
                 selected={data.payMode === 'card'}
-                onClick={() => update('payMode', 'card')}
+                onClick={() => {
+                  trackPaymentType('card', data.payCustomAmount || data.payAmountType === 'full' ? TOTAL_DUE.toString() : '4200', borrower);
+                  update('payMode', 'card');
+                }}
               />
             </div>
             <div className="mt-8">
@@ -215,6 +234,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                    onClick={() => {
                      setSliderValue(MAX_SETTLEMENT);
                      update('settlementAmount', MAX_SETTLEMENT.toString());
+                     trackSettlementChange(MAX_SETTLEMENT, true, borrower);
                    }}
                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all"
                  >
@@ -233,6 +253,8 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                    const val = parseInt(e.target.value);
                    setSliderValue(val);
                    update('settlementAmount', val.toString());
+                   const isClosure = val === MAX_SETTLEMENT;
+                   trackSettlementChange(val, isClosure, borrower);
                }}
                onMouseUp={(e) => {
                    // Ensure slider snaps to max if very close
@@ -240,6 +262,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                    if (Math.abs(val - MAX_SETTLEMENT) < 50) {
                        setSliderValue(MAX_SETTLEMENT);
                        update('settlementAmount', MAX_SETTLEMENT.toString());
+                       trackSettlementChange(MAX_SETTLEMENT, true, borrower);
                    }
                }}
                className={`w-full h-4 rounded-full appearance-none cursor-pointer shadow-inner transition-all duration-300 ${isFullClosure ? 'bg-emerald-100' : 'bg-amber-100'}`}
@@ -340,6 +363,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                 }
                 
                 const whatsappUrl = `https://wa.me/919008457659?text=${encodeURIComponent(whatsappText)}`;
+                trackExternalLink('whatsapp', Intent.UNKNOWN_LOAN, borrower);
                 window.open(whatsappUrl, '_blank');
               }}
             />
@@ -563,6 +587,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                         title="Chat on WhatsApp"
                         subtitle="Fastest response"
                         colorClass="bg-emerald-100 text-emerald-600"
+                        onClick={() => trackExternalLink('whatsapp', Intent.TALK_TO_ADVISOR, borrower)}
                     />
                     <ExternalLinkButton 
                         href={LINKS.CALL}
@@ -570,6 +595,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                         title="Call Support"
                         subtitle="+91 90084 57659"
                         colorClass="bg-blue-100 text-blue-600"
+                        onClick={() => trackExternalLink('phone', Intent.TALK_TO_ADVISOR, borrower)}
                     />
                     <ExternalLinkButton 
                         href={LINKS.CALENDAR}
@@ -577,6 +603,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                         title="Book a Slot"
                         subtitle="Schedule a debt counselling session"
                         colorClass="bg-violet-100 text-violet-600"
+                        onClick={() => trackExternalLink('calendar', Intent.TALK_TO_ADVISOR, borrower)}
                     />
                 </div>
              </div>
@@ -597,7 +624,10 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
           </div>
           
           <Button 
-            onClick={() => window.open(whatsappUrl, '_blank')}
+            onClick={() => {
+              trackExternalLink('whatsapp', Intent.ALREADY_PAID, borrower);
+              window.open(whatsappUrl, '_blank');
+            }}
             className="from-emerald-500 to-green-600 shadow-emerald-200"
           >
             <MessageCircle size={18} />
@@ -653,6 +683,7 @@ export const DetailsForm: React.FC<Props> = ({ intent, initialData, onSubmit, on
                     title="Verify via WhatsApp"
                     subtitle="Official Support Channel"
                     colorClass="bg-emerald-100 text-emerald-600"
+                    onClick={() => trackExternalLink('whatsapp', Intent.FRAUD_CONCERN, borrower)}
                 />
             </div>
             </div>

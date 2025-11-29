@@ -3,6 +3,7 @@ import React from 'react';
 import { Intent, FormData, BorrowerProfile } from '../types';
 import { Button } from './ui/Base';
 import { Check, ShieldCheck, Calendar, RefreshCcw, Sun, Clock, Mail, MessageCircle, AlertCircle, ArrowRight, Phone, UserCheck } from 'lucide-react';
+import { trackExternalLink } from '../utils/mixpanel';
 
 interface Props {
   intent: Intent;
@@ -75,7 +76,10 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
 
         <div className="space-y-3">
             <Button 
-                onClick={() => window.open(whatsappUrl, '_blank')}
+                onClick={() => {
+                  trackExternalLink('whatsapp', intent, borrower);
+                  window.open(whatsappUrl, '_blank');
+                }}
                 className="from-emerald-500 to-green-600 shadow-emerald-200 animate-pulse-slow"
             >
                 <MessageCircle size={18} />
@@ -143,7 +147,10 @@ export const Summary: React.FC<Props> = ({ intent, data, onReset, borrower }) =>
 
             <div className="space-y-3">
                 <Button 
-                    onClick={() => window.open(waConnectLink, '_blank')}
+                    onClick={() => {
+                      trackExternalLink('whatsapp', Intent.NEED_TIME, borrower);
+                      window.open(waConnectLink, '_blank');
+                    }}
                     className="from-emerald-500 to-green-600 shadow-emerald-200"
                 >
                     <MessageCircle size={18} />

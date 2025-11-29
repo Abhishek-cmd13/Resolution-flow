@@ -7,6 +7,7 @@ import { Summary } from './components/Summary';
 import { Intent, Step, FormData, BorrowerProfile } from './types';
 import { Card } from './components/ui/Base';
 import { extractBorrowerFromURL } from './utils/tokenDecrypt';
+import { trackPageView, trackStepChange, trackBorrowerLoaded, identifyUser, trackIntentSelection, trackFormSubmit } from './utils/mixpanel';
 
 function App() {
   const [step, setStep] = useState<Step>(1);
@@ -20,6 +21,8 @@ function App() {
       const borrowerData = await extractBorrowerFromURL();
       if (borrowerData) {
         setBorrower(borrowerData);
+        trackBorrowerLoaded(borrowerData);
+        identifyUser(borrowerData);
         console.log('[App] Borrower data loaded from URL:', borrowerData);
       } else {
         console.log('[App] No borrower data found in URL');
@@ -28,22 +31,27 @@ function App() {
     loadBorrowerData();
   }, []);
 
-  // detailed logging
+  // detailed logging and tracking
   useEffect(() => {
     console.log(`[App State Update] Step: ${step}, Intent: ${intent || 'None'}`);
     if (Object.keys(formData).length > 0) {
       console.log('[App Data Update]', formData);
     }
-  }, [step, intent, formData]);
+    // Track step changes
+    trackStepChange(step, intent || undefined, borrower || undefined);
+    trackPageView(`Step ${step}`, { intent: intent || 'none' });
+  }, [step, intent, formData, borrower]);
 
   const handleIntentSelect = (selectedIntent: Intent) => {
     console.log(`[User Action] Selected Intent: ${selectedIntent}`);
+    trackIntentSelection(selectedIntent, borrower || undefined);
     setIntent(selectedIntent);
     setStep(2);
   };
 
   const handleFormSubmit = (data: FormData) => {
     console.log('[User Action] Form Submitted', data);
+    trackFormSubmit(intent || 'unknown', data, borrower || undefined);
     
     // Check if we need to redirect to TALK_TO_ADVISOR intent
     if (data.redirectToAdvisor) {

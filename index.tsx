@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import { initMixpanel } from './utils/mixpanel';
+
+// Initialize Mixpanel tracking
+initMixpanel();
 
 console.log('[Startup] Initializing application...');
 

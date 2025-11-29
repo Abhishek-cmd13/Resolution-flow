@@ -1,6 +1,7 @@
 import React from 'react';
 import { Intent, BorrowerProfile } from '../types';
 import { HandCoins, MessageCircleHeart, FileText, ShieldAlert, ChevronRight, HelpCircle, Clock, CheckCircle, HeartHandshake } from 'lucide-react';
+import { trackIntentSelection } from '../utils/mixpanel';
 
 interface Props {
   onSelect: (intent: Intent) => void;
@@ -85,7 +86,10 @@ export const IntentSelection: React.FC<Props> = ({ onSelect, borrower }) => {
       <div className="grid grid-cols-2 gap-3 mb-6">
         {/* Special Full Width Item for Settlement */}
         <button
-            onClick={() => onSelect(Intent.REQUEST_SETTLEMENT)}
+            onClick={() => {
+              trackIntentSelection(Intent.REQUEST_SETTLEMENT, borrower);
+              onSelect(Intent.REQUEST_SETTLEMENT);
+            }}
             className="col-span-2 w-full flex items-center p-4 bg-white/80 backdrop-blur-md border border-white/60 rounded-2xl shadow-sm hover:bg-white hover:scale-[1.01] transition-all duration-200 group text-left"
         >
             <div className={`w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mr-4 shrink-0 shadow-inner`}>
@@ -102,7 +106,10 @@ export const IntentSelection: React.FC<Props> = ({ onSelect, borrower }) => {
         {allItems.filter(i => i.id !== Intent.REQUEST_SETTLEMENT).map((item) => (
             <button
             key={item.id}
-            onClick={() => onSelect(item.id)}
+            onClick={() => {
+              trackIntentSelection(item.id, borrower);
+              onSelect(item.id);
+            }}
             className="flex flex-col items-start p-4 bg-white/70 backdrop-blur-sm border border-white/50 rounded-2xl shadow-sm hover:bg-white hover:scale-[1.02] transition-all duration-200 group text-left h-full"
             >
             <div className={`w-10 h-10 rounded-xl ${item.iconBg} ${item.color} flex items-center justify-center mb-3 shadow-inner`}>
@@ -117,13 +124,19 @@ export const IntentSelection: React.FC<Props> = ({ onSelect, borrower }) => {
       {/* Footer Links */}
       <div className="flex justify-center gap-3 mt-6">
         <button 
-          onClick={() => onSelect(Intent.DOCUMENTS)}
+          onClick={() => {
+            trackIntentSelection(Intent.DOCUMENTS, borrower);
+            onSelect(Intent.DOCUMENTS);
+          }}
           className="text-sm font-bold text-slate-700 hover:text-sky-900 flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/30 border border-white/40 hover:bg-white/50 transition-all shadow-sm"
         >
           <FileText size={16} /> Get Document
         </button>
         <button 
-          onClick={() => onSelect(Intent.FRAUD_CONCERN)}
+          onClick={() => {
+            trackIntentSelection(Intent.FRAUD_CONCERN, borrower);
+            onSelect(Intent.FRAUD_CONCERN);
+          }}
           className="text-sm font-bold text-slate-700 hover:text-rose-900 flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/30 border border-white/40 hover:bg-white/50 transition-all shadow-sm"
         >
           <ShieldAlert size={16} /> Report Issue

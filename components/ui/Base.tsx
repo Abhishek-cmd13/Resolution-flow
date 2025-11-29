@@ -74,11 +74,13 @@ export const ExternalLinkButton: React.FC<{
     subtitle?: string; 
     href: string;
     colorClass?: string;
-  }> = ({ icon: Icon, title, subtitle, href, colorClass = 'bg-slate-100 text-slate-600' }) => (
+    onClick?: () => void;
+  }> = ({ icon: Icon, title, subtitle, href, colorClass = 'bg-slate-100 text-slate-600', onClick }) => (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={onClick}
       className="w-full text-left p-4 rounded-2xl border-2 border-slate-100 bg-white hover:border-sky-200 hover:bg-slate-50/50 transition-all duration-200 flex items-center gap-4 group no-underline"
     >
       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${colorClass}`}>
