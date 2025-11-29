@@ -2,6 +2,14 @@ import mixpanel from 'mixpanel-browser';
 
 const MIXPANEL_TOKEN = 'fbf7b18da88c0c5740b3ee4009a8d8fd';
 
+// Helper to get current page URL
+const getCurrentPageUrl = (): string => {
+  if (typeof window !== 'undefined') {
+    return window.location.href;
+  }
+  return 'unknown';
+};
+
 // Initialize Mixpanel
 export const initMixpanel = () => {
   if (typeof window !== 'undefined') {
@@ -18,30 +26,33 @@ export const initMixpanel = () => {
 export const trackPageView = (page: string, properties?: Record<string, any>) => {
   mixpanel.track('Page View', {
     page,
+    page_url: getCurrentPageUrl(),
     ...properties,
   });
-  console.log('[Mixpanel] Tracked: Page View', { page, ...properties });
+  console.log('[Mixpanel] Tracked: Page View', { page, page_url: getCurrentPageUrl(), ...properties });
 };
 
 // Track intent selection
 export const trackIntentSelection = (intent: string, borrower?: any) => {
   mixpanel.track('Intent Selected', {
     intent,
+    page_url: getCurrentPageUrl(),
     borrower_id: borrower?.account || borrower?.phone || 'unknown',
     borrower_name: borrower?.name || 'unknown',
     amount: borrower?.amount || null,
   });
-  console.log('[Mixpanel] Tracked: Intent Selected', { intent });
+  console.log('[Mixpanel] Tracked: Intent Selected', { intent, page_url: getCurrentPageUrl() });
 };
 
 // Track form submission
 export const trackFormSubmit = (intent: string, formData: any, borrower?: any) => {
   mixpanel.track('Form Submitted', {
     intent,
+    page_url: getCurrentPageUrl(),
     ...formData,
     borrower_id: borrower?.account || borrower?.phone || 'unknown',
   });
-  console.log('[Mixpanel] Tracked: Form Submitted', { intent });
+  console.log('[Mixpanel] Tracked: Form Submitted', { intent, page_url: getCurrentPageUrl() });
 };
 
 // Track external link clicks
@@ -49,9 +60,10 @@ export const trackExternalLink = (linkType: string, intent?: string, borrower?: 
   mixpanel.track('External Link Clicked', {
     link_type: linkType, // 'whatsapp', 'phone', 'calendar'
     intent: intent || 'unknown',
+    page_url: getCurrentPageUrl(),
     borrower_id: borrower?.account || borrower?.phone || 'unknown',
   });
-  console.log('[Mixpanel] Tracked: External Link Clicked', { link_type: linkType, intent });
+  console.log('[Mixpanel] Tracked: External Link Clicked', { link_type: linkType, intent, page_url: getCurrentPageUrl() });
 };
 
 // Track settlement amount changes
@@ -59,6 +71,7 @@ export const trackSettlementChange = (amount: number, isClosure: boolean, borrow
   mixpanel.track('Settlement Amount Changed', {
     amount,
     is_closure: isClosure,
+    page_url: getCurrentPageUrl(),
     borrower_id: borrower?.account || borrower?.phone || 'unknown',
   });
 };
@@ -68,6 +81,7 @@ export const trackPaymentType = (paymentType: string, amount?: string, borrower?
   mixpanel.track('Payment Type Selected', {
     payment_type: paymentType,
     amount: amount || null,
+    page_url: getCurrentPageUrl(),
     borrower_id: borrower?.account || borrower?.phone || 'unknown',
   });
 };
@@ -77,6 +91,7 @@ export const trackStepChange = (step: number, intent?: string, borrower?: any) =
   mixpanel.track('Step Changed', {
     step,
     intent: intent || 'none',
+    page_url: getCurrentPageUrl(),
     borrower_id: borrower?.account || borrower?.phone || 'unknown',
   });
 };
@@ -88,6 +103,7 @@ export const trackBorrowerLoaded = (borrower: any) => {
     has_name: !!borrower?.name,
     has_amount: !!borrower?.amount,
     has_settlement_range: !!(borrower?.min_settlement && borrower?.max_settlement),
+    page_url: getCurrentPageUrl(),
   });
 };
 
